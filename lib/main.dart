@@ -19,44 +19,45 @@ Future<List<Currency>> fetchCurrenciesFromInternet() async {
 void main() => runApp(new MyApp());
 
 class _CurrencyPageState extends State<CurrencyPageBody> {
-
   List<Currency> currencies;
 
   _CurrencyPageState(this.currencies);
 
   void _addCurrencies(List<Currency> newCurrencies) {
-      setState(() {
-        currencies.clear();
-        currencies.addAll(newCurrencies);
-        });
-    }
+    setState(() {
+      currencies.clear();
+      currencies.addAll(newCurrencies);
+    });
+  }
 
-    Future<Null> _onRefresh() {
-      Completer<Null> completer = new Completer<Null>();
-      fetchCurrenciesFromInternet().then((cur) => _addCurrencies(cur));
-      completer.complete();
-      return completer.future;
-    }
+  Future<Null> _onRefresh() {
+    Completer<Null> completer = new Completer<Null>();
+    fetchCurrenciesFromInternet().then((cur) => _addCurrencies(cur));
+    completer.complete();
+    return completer.future;
+  }
+
   @override
   Widget build(BuildContext context) {
-   return new RefreshIndicator(
+    return new RefreshIndicator(
       child: new ListView.builder(
-        itemBuilder: (context, index) => new CurrencySimpleRow(currencies[index]),
+        itemBuilder: (context, index) =>
+            new CurrencySimpleRow(currencies[index]),
         itemCount: currencies.length,
-      ), onRefresh: () {
+      ),
+      onRefresh: () {
         return _onRefresh();
       },
+      displacement: 10.0,
     );
   }
 }
 
-
 class CurrencyPageBody extends StatefulWidget {
-
   final List<Currency> currencies;
 
   CurrencyPageBody(this.currencies);
-  
+
   @override
   State<StatefulWidget> createState() {
     return new _CurrencyPageState(currencies);

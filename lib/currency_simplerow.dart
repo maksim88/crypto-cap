@@ -8,6 +8,12 @@ class CurrencySimpleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var currenciesMap = {
+      "1h": currency.change1h,
+      "24h": currency.change24h,
+      "7d": currency.change7d,
+    };
+
     return new Container(
       padding: const EdgeInsets.all(16.0),
       child: new Row(
@@ -28,8 +34,9 @@ class CurrencySimpleRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                new ValueChangeLayout(
-                    currency.change1h, currency.change24h, currency.change7d)
+                // new ValueChangeLayout(
+                //     currency.change1h, currency.change24h, currency.change7d)
+                new CurrencyUpDownLayout(currenciesMap)
               ],
             ),
           ),
@@ -40,81 +47,40 @@ class CurrencySimpleRow extends StatelessWidget {
   }
 }
 
-class ValueChangeLayout extends StatelessWidget {
-  final String percentage1h;
-  final String percentage24h;
-  final String percentage7d;
+class CurrencyUpDownLayout extends StatelessWidget {
+  final Map<String, String> percentages;
 
-  // Wow, that thing is ugly ^^. Refactor
-  ValueChangeLayout(this.percentage1h, this.percentage24h, this.percentage7d);
+  CurrencyUpDownLayout(this.percentages);
+
   @override
   Widget build(BuildContext context) {
-    var down1 = "-" == percentage1h[0];
-    var down24 = "-" == percentage24h[0];
-    var down7 = "-" == percentage7d[0];
-    var percentage1Cleaned;
-    var percentage24Cleaned;
-    var percentage7Cleaned;
-    var icon1;
-    var icon24;
-    var icon7;
-    if (down1) {
-      icon1 = new Icon(
-        Icons.arrow_downward,
-        color: Colors.red,
-      );
-      percentage1Cleaned = percentage1h.substring(1, percentage1h.length) + "%";
-    } else {
-      icon1 = new Icon(
-        Icons.arrow_upward,
-        color: Colors.lightGreen,
-      );
-      percentage1Cleaned = percentage1h + "%";
+    var list = <Widget>[];
+    for (var item in percentages.entries) {
+      var down = "-" == item.value[0];
+      var finalPercentage;
+      var icon;
+      if (down) {
+        finalPercentage = item.value.substring(1, item.value.length);
+        icon = new Icon(
+          Icons.arrow_downward,
+          color: Colors.red,
+          size: 12.0,
+        );
+      } else {
+        icon = new Icon(
+          Icons.arrow_upward,
+          color: Colors.lightGreen,
+          size: 12.0,
+        );
+        finalPercentage = item.value;
+      }
+      list.add(new Text(item.key,
+          style: new TextStyle(fontStyle: FontStyle.italic)));
+      list.add(icon);
+      list.add(new Padding(
+          padding: new EdgeInsets.only(right: 6.0),
+          child: new Text(finalPercentage + "%")));
     }
-    if (down7) {
-      icon7 = new Icon(
-        Icons.arrow_downward,
-        color: Colors.red,
-      );
-      percentage7Cleaned = percentage7d.substring(1, percentage7d.length) + "%";
-    } else {
-      icon7 = new Icon(
-        Icons.arrow_upward,
-        color: Colors.lightGreen,
-      );
-      percentage7Cleaned = percentage7d + "%";
-    }
-    if (down24) {
-      icon24 = new Icon(
-        Icons.arrow_downward,
-        color: Colors.red,
-      );
-      percentage24Cleaned = percentage24h.substring(1, percentage7d.length) + "%";
-    } else {
-      icon24 = new Icon(
-        Icons.arrow_upward,
-        color: Colors.lightGreen,
-      );
-      percentage24Cleaned = percentage24h+ "%";
-    }
-    return new Row(
-      children: <Widget>[
-        new Text("1h:", style: new TextStyle(fontStyle: FontStyle.italic)),
-        icon1,
-        new Text(percentage1Cleaned),
-        new Padding(
-            padding: EdgeInsets.only(left: 6.0),
-            child: new Text("24h:",
-                style: new TextStyle(fontStyle: FontStyle.italic))),
-        icon24,
-        new Text(percentage24Cleaned),
-        new Padding(
-            padding: EdgeInsets.only(left: 6.0),
-            child: new Text("7d:",
-                style: new TextStyle(fontStyle: FontStyle.italic))),
-        icon7,
-        new Text(percentage7Cleaned),
-      ],
-    );
+    return new Row(children: list);
   }
 }
