@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto_cap/currency.dart';
-import 'package:crypto_cap/currency_row.dart';
 import 'package:crypto_cap/currency_simplerow.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -19,19 +18,48 @@ Future<List<Currency>> fetchCurrenciesFromInternet() async {
 
 void main() => runApp(new MyApp());
 
-class HomePageBody extends StatelessWidget {
-  final List<Currency> currencies;
+class _CurrencyPageState extends State<CurrencyPageBody> {
 
-  HomePageBody(this.currencies);
+  List<Currency> currencies;
 
+  _CurrencyPageState(this.currencies);
+
+  void _addCurrencies(List<Currency> newCurrencies) {
+      setState(() {
+        currencies.clear();
+        currencies.addAll(newCurrencies);
+        });
+    }
+
+    Future<Null> _onRefresh() {
+      Completer<Null> completer = new Completer<Null>();
+      fetchCurrenciesFromInternet().then((cur) => _addCurrencies(cur));
+      completer.complete();
+      return completer.future;
+    }
   @override
   Widget build(BuildContext context) {
-    return new Expanded(
+   return new RefreshIndicator(
       child: new ListView.builder(
-        itemBuilder: (context, index) => new CurrencyRow(currencies[index]),
+        itemBuilder: (context, index) => new CurrencySimpleRow(currencies[index]),
         itemCount: currencies.length,
-      ),
+      ), onRefresh: () {
+        return _onRefresh();
+      },
     );
+  }
+}
+
+
+class CurrencyPageBody extends StatefulWidget {
+
+  final List<Currency> currencies;
+
+  CurrencyPageBody(this.currencies);
+  
+  @override
+  State<StatefulWidget> createState() {
+    return new _CurrencyPageState(currencies);
   }
 }
 
@@ -41,7 +69,7 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: 'Crypto Cap',
       theme: new ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.blueGrey,
       ),
       home: new Scaffold(
         appBar: new AppBar(
@@ -52,11 +80,7 @@ class MyApp extends StatelessWidget {
             future: fetchCurrenciesFromInternet(),
             builder: (context, snapshots) {
               if (snapshots.hasData) {
-                return new ListView.builder(
-                  itemBuilder: (context, index) =>
-                      new CurrencySimpleRow(snapshots.data[index]),
-                  itemCount: snapshots.data.length,
-                );
+                return CurrencyPageBody(snapshots.data);
               } else if (snapshots.hasError) {
                 return new Text("${snapshots.error}");
               }

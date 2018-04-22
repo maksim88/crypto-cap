@@ -63,39 +63,39 @@ class ValueChangeLayout extends StatelessWidget {
         Icons.arrow_downward,
         color: Colors.red,
       );
-      percentage1Cleaned = percentage1h.substring(1, percentage1h.length);
+      percentage1Cleaned = percentage1h.substring(1, percentage1h.length) + "%";
     } else {
       icon1 = new Icon(
         Icons.arrow_upward,
         color: Colors.lightGreen,
       );
-      percentage1Cleaned = percentage1h;
+      percentage1Cleaned = percentage1h + "%";
     }
     if (down7) {
       icon7 = new Icon(
         Icons.arrow_downward,
         color: Colors.red,
       );
-      percentage7Cleaned = percentage7d.substring(1, percentage7d.length);
+      percentage7Cleaned = percentage7d.substring(1, percentage7d.length) + "%";
     } else {
       icon7 = new Icon(
         Icons.arrow_upward,
         color: Colors.lightGreen,
       );
-      percentage7Cleaned = percentage7d;
+      percentage7Cleaned = percentage7d + "%";
     }
     if (down24) {
       icon24 = new Icon(
         Icons.arrow_downward,
         color: Colors.red,
       );
-      percentage24Cleaned = percentage24h.substring(1, percentage7d.length);
+      percentage24Cleaned = percentage24h.substring(1, percentage7d.length) + "%";
     } else {
       icon24 = new Icon(
         Icons.arrow_upward,
         color: Colors.lightGreen,
       );
-      percentage24Cleaned = percentage24h;
+      percentage24Cleaned = percentage24h+ "%";
     }
     return new Row(
       children: <Widget>[
